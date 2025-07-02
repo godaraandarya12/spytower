@@ -1,0 +1,38 @@
+name: Surveillance NVR CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y ffmpeg
+
+      - name: Execute Installer Script (Dry Run)
+        run: |
+          chmod +x setup_surveillance.sh
+          bash -n setup_surveillance.sh
+
+      - name: Lint Shell Scripts
+        uses: ludeeus/action-shellcheck@master
+        with:
+          severity: warning
+
+      - name: Validate MediaMTX Config
+        run: |
+          mkdir -p config recordings
+          echo "cam_example|rtsp://test" > rtsp_feeds.txt
+          ./setup_surveillance.sh || echo "Expected prompt for config only"

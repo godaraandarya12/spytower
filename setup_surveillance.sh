@@ -14,7 +14,8 @@ trap 'echo "[ERROR] Line $LINENO: $BASH_COMMAND" >&2' ERR
 ###############################################################################
 # 0. Globals
 ###############################################################################
-: "${INSTALL_DIR:=$HOME/surveillance}"  # override by env if desired
+: "${INSTALL_DIR:=$(eval echo ~$SUDO_USER)/surveillance}"
+  # override by env if desired
 RECORD_DIR="$INSTALL_DIR/recordings"
 MTX_TAG="latest"
 RETENTION_HOURS=24
